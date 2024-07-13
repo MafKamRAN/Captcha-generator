@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Captcha Example</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div id="_status" class="status"></div>
+        <input type="text" id="_generator" readonly class="generator">
+        <input type="text" id="_client-text" placeholder="Enter captcha" class="client-text">
+        <button id="_submit">Submit</button>
+        <button id="_refresh">Refresh</button>
+    </div>
+    </div>
+
+    <script>
+        const display = document.getElementById("_status");
+        const submit = document.getElementById("_submit");
+        const refresh = document.getElementById("_refresh");
+        const char = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        let captcha = "";
+
+        function generateCaptcha() {
+            captcha = "";
+            const captchaLength = 6;
+            for (let i = 0; i < captchaLength; i++) {
+                const randomIndex = Math.floor(Math.random() * char.length);
+                captcha += char[randomIndex];
+            }
+            document.getElementById("_generator").value = captcha;
+            display.innerText = "Captcha Generator";
+            sessionStorage.setItem('captcha', captcha);
+        }
+
+        function loadCaptcha() {
+            generateCaptcha();
+        }
+
+        window.onload = loadCaptcha;
+
+        submit.onclick = function checkInput() {
+            const clientInput = document.getElementById("_client-text").value;
+            if (clientInput === sessionStorage.getItem('captcha')) {
+                display.innerHTML = "Captcha matched!";
+                sessionStorage.removeItem('captcha');
+                document.getElementById("_client-text").value = '';
+                generateCaptcha();
+            } else {
+                display.innerHTML = "Captcha did not match, try again!";
+            }
+        };
+
+        refresh.onclick = function refreshCaptcha() {
+            generateCaptcha();
+            display.innerText = "New Captcha generated";
+        };
+    </script>
+</body>
+
+</html>
